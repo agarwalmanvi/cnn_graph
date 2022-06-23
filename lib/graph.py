@@ -115,7 +115,9 @@ def replace_random_edges(A, noise_level):
 
 
 def laplacian(W, normalized=True):
-    """Return the Laplacian of the weigth matrix."""
+    """Return the Laplacian of the weigth matri x."""
+
+    print("Computing laplacian...")
 
     # Degree matrix.
     d = W.sum(axis=0)
@@ -169,9 +171,12 @@ def fourier(L, algo='eigh', k=1):
 def plot_spectrum(L, algo='eig'):
     """Plot the spectrum of a list of multi-scale Laplacians L."""
     # Algo is eig to be sure to get all eigenvalues.
+    print("Plotting spectrum")
     plt.figure(figsize=(17, 5))
     for i, lap in enumerate(L):
+        print("Laplacian ", str(i))
         lamb, U = fourier(lap, algo)
+        print("Computed fourier")
         step = 2**i
         x = range(step//2, L[0].shape[0], step)
         lb = 'L_{} spectrum in [{:1.2e}, {:1.2e}]'.format(i, lamb[0], lamb[-1])

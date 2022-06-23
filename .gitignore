@@ -17,3 +17,7 @@ checkpoints/
 .idea
 cnn_venv
 lightning_logs/*
+
+*.zip
+*.npz
+*.sh

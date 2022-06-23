@@ -1,58 +1,30 @@
 import torch
 from torch.utils.data import Dataset
-import os
-import wfdb
+from lib.mlggm.preprocess_data import get_apnea_data
 import numpy as np
+import os
 
 
 class Apnea(Dataset):
     def __init__(
             self,
             path: str,
-            ds_type: str = "train",
     ):
         super(Apnea, self).__init__()
         self.path = path
-        self.ds_type = ds_type
 
-        if ds_type == "train":
-            n_ = ["0" + str(i) for i in range(1, 10)] + [str(i) for i in list(range(10, 21))]
-            # fnames = ["a" + i for i in n_] + ["b" + i for i in n_[:5]] + ["c" + i for i in n_[:10]]
-            fnames = ["a" + i for i in n_[:5]]
-        elif ds_type == "test":
-            # the testing files don't come with labels :/
-            # n_ = ["0" + str(i) for i in range(1, 10)] + [str(i) for i in list(range(10, 36))]
-            # fnames = ["x" + i for i in n_[:3]]
-            n_ = ["0" + str(i) for i in range(1, 10)] + [str(i) for i in list(range(10, 21))]
-            fnames = ["a" + i for i in n_[5:7]]
-        else:
-            raise Exception("dataset type cannot be identified.")
+        n_ = ["0" + str(i) for i in range(1, 10)] + [str(i) for i in list(range(10, 21))]
+        fnames = ["a" + i for i in n_] + ["b" + i for i in n_[:5]] + ["c" + i for i in n_[:10]]
 
-        # # # Get data and labels # # #
-
-        samples = None
-        labels = []
-
-        for fname in fnames:
-
-            print("Processing ", fname, "...")
-
-            # import all relevant data
-            signal = wfdb.rdrecord(os.path.join(self.path, fname)).__dict__['p_signal']
-            annotation = wfdb.rdann(os.path.join(self.path, fname), 'apn')
-            sample_boundaries = annotation.__dict__["sample"]
-            sample_labels = annotation.__dict__["symbol"]
-
-            for boundary_idx in range(len(sample_boundaries) - 1):
-                # select the one minute segment
-                sample_ = signal[sample_boundaries[boundary_idx]:sample_boundaries[boundary_idx + 1]]
-                samples = sample_ if samples is None else np.concatenate((samples, sample_), 1)
-
-                # select corresponding label
-                label_ = sample_labels[boundary_idx]
-                assert (label_ == "A") or (label_ == "N")
-                label_ = 0 if label_ == "N" else 1
-                labels.append(label_)
+        try:
+            data = np.load(os.path.join(path, "apnea_data.npz"))
+            samples, labels = data['samples'], data['labels']
+            print("Loaded data from cache...")
+        except:
+            samples, labels = get_apnea_data(fnames=fnames, path=path)
+            print("Loaded data from original source, saving for later use...")
+            with open(os.path.join(path, "apnea_data.npz"), "wb") as f:
+                np.savez(f, samples=samples, labels=labels)
 
         # cast samples to torch tensor and transpose to shape: nb_samples x seq_len
         self.X = torch.transpose(torch.tensor(samples, dtype=torch.float), 0, 1)
