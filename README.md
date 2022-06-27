@@ -1,3 +1,13 @@
+# MLGGM course project
+Manvi, Martin, Georg
+
+The models can be found in:
+1. Feedforward baseline model: `Feedforward.ipynb`
+2. Convolutional Graph NN: `CGCNN.ipynb`
+
+The source code for the baseline model and data preprocessing can be found under `./lib/mlggm`. Additionally, the data was preprocessed and saved into compressed NumPy `.npz` files, which can be downloaded from [here](https://drive.google.com/file/d/1KVE9AzpsLugcW8f0OFOyyv7tYMZDY8ZW/view?usp=sharing). The files should be extracted into `./data/` and can be used as shown in the notebooks.
+
+
 # Convolutional Neural Networks on Graphs with Fast Localized Spectral Filtering
 
 The code in this repository implements an efficient generalization of the
