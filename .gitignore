@@ -21,3 +21,4 @@ lightning_logs/*
 *.zip
 *.npz
 *.sh
+*.png
