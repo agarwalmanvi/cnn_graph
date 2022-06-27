@@ -22,17 +22,20 @@ class ApneaDataModule(pl.LightningDataModule):
         self.shuffle = shuffle
         self.persistent_workers = True if self.num_workers > 0 else False
 
-        ds = Apnea(path=path)
-        val_len = round(0.1 * len(ds))
-        train_len = len(ds) - val_len - val_len
+        # ds = Apnea(path=path)
+        # val_len = round(0.1 * len(ds))
+        # train_len = len(ds) - val_len - val_len
+        #
+        # self.trainset, self.validset, self.testset = random_split(
+        #     ds, lengths=[train_len, val_len, val_len], generator=torch.Generator().manual_seed(42)
+        # )
 
-        self.trainset, self.validset, self.testset = random_split(
-            ds, lengths=[train_len, val_len, val_len], generator=torch.Generator().manual_seed(42)
-        )
+        self.trainset = Apnea(path=path, ds_type="train")
+        self.validset = Apnea(path=path, ds_type="test")
 
         print("Size of training set: ", len(self.trainset))
         print("Size of validation set: ", len(self.validset))
-        print("Size of testing set: ", len(self.testset))
+        # print("Size of testing set: ", len(self.testset))
 
     def train_dataloader(self) -> DataLoader:
         loader = DataLoader(
@@ -56,13 +59,13 @@ class ApneaDataModule(pl.LightningDataModule):
         )
         return loader
 
-    def test_dataloader(self) -> DataLoader:
-        loader = DataLoader(
-            self.testset,
-            shuffle=self.shuffle,
-            batch_size=self.batch_size,
-            num_workers=self.num_workers,
-            persistent_workers=self.persistent_workers,
-            pin_memory=True
-        )
-        return loader
+    # def test_dataloader(self) -> DataLoader:
+    #     loader = DataLoader(
+    #         self.testset,
+    #         shuffle=self.shuffle,
+    #         batch_size=self.batch_size,
+    #         num_workers=self.num_workers,
+    #         persistent_workers=self.persistent_workers,
+    #         pin_memory=True
+    #     )
+    #     return loader

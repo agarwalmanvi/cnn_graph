@@ -41,12 +41,22 @@ class FF(pl.LightningModule):
 
         return out
 
-    def training_step(self, batch):
+    def training_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self(x)
         loss = self.loss_fn(y_hat, y)
         self.log("train/loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return loss
+
+    def validation_step(self, batch, batch_idx):
+        x, y = batch
+        y_hat = self(x)
+        loss = self.loss_fn(y_hat, y)
+        self.log("test/loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        y_pred = (y_hat > 0).to(dtype=torch.int)
+        acc = (torch.count_nonzero(y_pred == y) / len(y))
+        self.log("test/acc", acc, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        return loss, acc
 
     def configure_optimizers(self):
         opt = torch.optim.RMSprop(self.parameters(), lr=self.hparams.lr)
