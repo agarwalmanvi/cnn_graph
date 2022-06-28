@@ -36,7 +36,7 @@ class Apnea(Dataset):
         self.y = torch.unsqueeze(torch.tensor(labels, dtype=torch.float), -1)
 
         # normalize data
-        self.X = (self.X - torch.min(self.X)) / (torch.max(self.X) - torch.min(self.X))
+#         self.X = (self.X - torch.min(self.X)) / (torch.max(self.X) - torch.min(self.X))
 
     def __len__(self):
         return len(self.y)
