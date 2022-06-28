@@ -4,6 +4,12 @@ import os
 
 
 def get_apnea_data(fnames, path):
+    """
+    Used to import data from apnea dataset and preprocess into one minute segments
+    :param fnames: all filenames that you want to import
+    :param path: where the apnea data is located
+    :return: tuple of numpy arrays containing samples and labels
+    """
     samples = None
     labels = []
 
